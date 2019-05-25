@@ -23,15 +23,18 @@
 #define PinB        14
 #define PinC        A11
 #define PinD        A12
+#define SW1         12
+#define SW2         A10
+
 
 String        zeitanzeige, datumanzeige;
-int reading = 0, uhr_minuten, uhr_stunden, uhr_sekunden, uhr_tag, uhr_monat, uhr_jahr;
-unsigned long currentTime;
-unsigned long lastTime, letzteUhrZeit;
+int reading = 0, uhr_minuten, uhr_stunden, uhr_sekunden, uhr_tag, uhr_monat, uhr_jahr; // Uhr
+unsigned long currentTime, lastTime, letzteUhrZeit;
+
 
 boolean encA, encB, encC, encD;
 boolean lastAB = false, lastCD = false;
-int counter;
+int counter, selected_menu;
 
 RGBmatrixPanel matrix(A, B, C, D, CLK, LAT, OE, false, 64);
 
@@ -66,6 +69,8 @@ void setup() {
   pinMode       (PinB, INPUT_PULLUP);
   pinMode       (PinC, INPUT_PULLUP);
   pinMode       (PinD, INPUT_PULLUP);
+  pinMode       (SW1, INPUT);
+  pinMode       (SW2, INPUT);
 
   currentTime = millis();
   lastTime = currentTime; 
@@ -134,19 +139,22 @@ void setup() {
   delay(1000);
   matrix.fillScreen(matrix.Color333(0, 0, 0));
   counter = 0;
+  selected_menu = 1;
   PrintTime();
 }
 
 void loop() {
 
-
-UHR();
-
-
+if (selected_menu == 0) MENU();
+if (selected_menu == 1) UHR();
 
 ROTARY();
+}
+
+void MENU(){
 
 }
+
 
 
 void UHR() {
@@ -205,19 +213,7 @@ void UHR() {
     printUhrDigit(hekto_jahr,42,22,7,7,7,1,5,8);     
     printUhrDigit(dezi_jahr,48,22,7,7,7,1,5,8);  
     printUhrDigit(basis_jahr,54,22,7,7,7,1,5,8);     
-    uhr_jahr = year();}
-
-
-
-//    Serial.print(month());
-
- //   Serial.print(year());
-
-   
-
-
-
-    
+    uhr_jahr = year();}  
   }
 
 
