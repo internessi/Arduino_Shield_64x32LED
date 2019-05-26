@@ -28,13 +28,12 @@
 
 
 String        zeitanzeige, datumanzeige;
-int reading = 0, uhr_minuten, uhr_stunden, uhr_sekunden, uhr_tag, uhr_monat, uhr_jahr; // Uhr
+String        menu_item [12];
+int           reading = 0, uhr_minuten, uhr_stunden, uhr_sekunden, uhr_tag, uhr_monat, uhr_jahr; // Uhr
 unsigned long currentTime, lastTime, letzteUhrZeit;
-
-
-boolean encA, encB, encC, encD;
-boolean lastAB = false, lastCD = false;
-int counter, selected_menu;
+boolean       encA, encB, encC, encD;
+boolean       lastAB = false, lastCD = false;
+int           rotary_event, counter, selected_menu, selected_menu_item;
 
 RGBmatrixPanel matrix(A, B, C, D, CLK, LAT, OE, false, 64);
 
@@ -72,6 +71,8 @@ void setup() {
   pinMode       (SW1, INPUT);
   pinMode       (SW2, INPUT);
 
+  
+
   currentTime = millis();
   lastTime = currentTime; 
   letzteUhrZeit = currentTime; 
@@ -83,8 +84,19 @@ void setup() {
   LED(2,2,1000);
   LED(7,7,1000);
 
-
-
+  menu_item [0] = "PlaySnake";
+  menu_item [1] = "Stopp+Uhr";
+  menu_item [2] = "Boxmaster";
+  menu_item [3] = "Zirkel";
+  menu_item [4] = "Ballsport";
+  menu_item [5] = "Rundezeit";
+  menu_item [6] = "Wertung";
+  menu_item [7] = "Tennis";
+  menu_item [8] = "PlaySnake";
+  menu_item [9] = "Stopp+Uhr";
+  menu_item [10] = "Boxmaster";
+  menu_item [11] = "Zirkel";
+  menu_item [12] = "Ballsport";
     
   DISPLAY_ON();
   matrix.begin();
@@ -136,15 +148,17 @@ void setup() {
   matrix.print('B');
   matrix.setTextColor(matrix.Color333(7,0,4));
   matrix.print('*');
-  delay(1000);
+  delay(500);
   matrix.fillScreen(matrix.Color333(0, 0, 0));
   counter = 0;
-  selected_menu = 1;
+  rotary_event = -1;
+  selected_menu = 0;
+  selected_menu_item = 2;
   PrintTime();
 }
 
 void loop() {
-
+  //delay(2500);
 if (selected_menu == 0) MENU();
 if (selected_menu == 1) UHR();
 
@@ -152,9 +166,62 @@ ROTARY();
 }
 
 void MENU(){
-
+    if (rotary_event < 0){
+      selected_menu_item = selected_menu_item - 1;
+      if (selected_menu_item  == 0) selected_menu_item = 8;
+      MENU_pfeile();
+      MENU_ITEMS();}
+    if (rotary_event > 0){
+      selected_menu_item = selected_menu_item + 1;
+      if (selected_menu_item  == 9) selected_menu_item = 1;
+      MENU_pfeile();
+      MENU_ITEMS();}    
+      rotary_event = 0;
 }
 
+void MENU_ITEMS(){
+  int i;
+  i = selected_menu_item;
+  matrix.fillRect(8, 1, 53, 8, matrix.Color333(0, 0, 0));  
+  matrix.setTextColor(matrix.Color333(7,0,0));
+  matrix.setCursor(8, 1);  
+  matrix.println(menu_item [i-1]);
+  matrix.fillRect(8, 9, 53, 8, matrix.Color333(0, 0, 0));  
+  matrix.setTextColor(matrix.Color333(0,7,0));
+  matrix.setCursor(8, 9);   
+  matrix.println(menu_item [i]);  
+  matrix.fillRect(8, 17, 53, 8, matrix.Color333(0, 0, 0)); 
+  matrix.setTextColor(matrix.Color333(7,0,0));
+  matrix.setCursor(8, 17); 
+  matrix.println(menu_item [i+1]);  
+  matrix.fillRect(8, 25, 53, 8, matrix.Color333(0, 0, 0)); 
+  matrix.setCursor(8, 25); 
+  matrix.println(menu_item [i+2]);   
+}
+
+void MENU_pfeile(){
+  matrix.setTextSize(1);   
+  matrix.setTextColor(matrix.Color333(7,0,0));
+  matrix.setCursor(0, 1);  
+  matrix.println(">");
+  matrix.setTextColor(matrix.Color333(0,7,0));
+  matrix.setCursor(0, 9);  
+  matrix.println(">");
+  matrix.drawPixel(1, 10, matrix.Color333(0,7,0));
+  matrix.drawPixel(1, 11, matrix.Color333(0,7,0));
+  matrix.drawPixel(1, 12, matrix.Color333(0,7,0));
+  matrix.drawPixel(1, 13, matrix.Color333(0,7,0));
+  matrix.drawPixel(1, 14, matrix.Color333(0,7,0));
+  matrix.drawPixel(2, 11, matrix.Color333(0,7,0));
+  matrix.drawPixel(2, 12, matrix.Color333(0,7,0));
+  matrix.drawPixel(2, 13, matrix.Color333(0,7,0));
+  matrix.drawPixel(3, 12, matrix.Color333(0,7,0));
+  matrix.setTextColor(matrix.Color333(7,0,0));
+  matrix.setCursor(0, 17);  
+  matrix.println(">");
+  matrix.setCursor(0, 25);  
+  matrix.println(">");  
+}
 
 
 void UHR() {
@@ -238,13 +305,13 @@ void ROTARY() {
     encA = digitalRead(PinA);
     encB = digitalRead(PinB);
     if ((!encA) && (lastAB)){if (encB){reading = reading + 1;}else{reading = reading - 1;}
-      Serial.println(reading);
+      rotary_event = reading;
     }
     lastAB = encA;
     encC = digitalRead(PinC);
     encD = digitalRead(PinD);
     if ((!encC) && (lastCD)){if (encD){reading = reading + 10;}else{reading = reading - 10;}
-      Serial.println(reading);
+      rotary_event = reading;
     }
     lastCD = encC;
     lastTime = currentTime;
