@@ -151,7 +151,7 @@ void setup() {
   delay(500);
   matrix.fillScreen(matrix.Color333(0, 0, 0));
   counter = 0;
-  rotary_event = -1;
+  reading = -1;
   selected_menu = 0;
   selected_menu_item = 2;
   PrintTime();
@@ -166,17 +166,20 @@ ROTARY();
 }
 
 void MENU(){
-    if (rotary_event < 0){
+    if (reading < 0){
       selected_menu_item = selected_menu_item - 1;
       if (selected_menu_item  == 0) selected_menu_item = 8;
       MENU_pfeile();
-      MENU_ITEMS();}
-    if (rotary_event > 0){
+      MENU_ITEMS();
+      reading = 0;
+      }
+    if (reading > 0){
       selected_menu_item = selected_menu_item + 1;
       if (selected_menu_item  == 9) selected_menu_item = 1;
       MENU_pfeile();
-      MENU_ITEMS();}    
-      rotary_event = 0;
+      MENU_ITEMS();
+      reading = 0;
+      }    
 }
 
 void MENU_ITEMS(){
@@ -202,24 +205,24 @@ void MENU_ITEMS(){
 void MENU_pfeile(){
   matrix.setTextSize(1);   
   matrix.setTextColor(matrix.Color333(7,0,0));
-  matrix.setCursor(0, 1);  
+  matrix.setCursor(1, 1);  
   matrix.println(">");
   matrix.setTextColor(matrix.Color333(0,7,0));
-  matrix.setCursor(0, 9);  
+  matrix.setCursor(1, 9);  
   matrix.println(">");
-  matrix.drawPixel(1, 10, matrix.Color333(0,7,0));
-  matrix.drawPixel(1, 11, matrix.Color333(0,7,0));
-  matrix.drawPixel(1, 12, matrix.Color333(0,7,0));
-  matrix.drawPixel(1, 13, matrix.Color333(0,7,0));
-  matrix.drawPixel(1, 14, matrix.Color333(0,7,0));
+  matrix.drawPixel(2, 10, matrix.Color333(0,7,0));
   matrix.drawPixel(2, 11, matrix.Color333(0,7,0));
   matrix.drawPixel(2, 12, matrix.Color333(0,7,0));
   matrix.drawPixel(2, 13, matrix.Color333(0,7,0));
+  matrix.drawPixel(2, 14, matrix.Color333(0,7,0));
+  matrix.drawPixel(3, 11, matrix.Color333(0,7,0));
   matrix.drawPixel(3, 12, matrix.Color333(0,7,0));
+  matrix.drawPixel(3, 13, matrix.Color333(0,7,0));
+  matrix.drawPixel(4, 12, matrix.Color333(0,7,0));
   matrix.setTextColor(matrix.Color333(7,0,0));
-  matrix.setCursor(0, 17);  
+  matrix.setCursor(1, 17);  
   matrix.println(">");
-  matrix.setCursor(0, 25);  
+  matrix.setCursor(1, 25);  
   matrix.println(">");  
 }
 
@@ -304,15 +307,11 @@ void ROTARY() {
   {
     encA = digitalRead(PinA);
     encB = digitalRead(PinB);
-    if ((!encA) && (lastAB)){if (encB){reading = reading + 1;}else{reading = reading - 1;}
-      rotary_event = reading;
-    }
+    if ((!encA) && (lastAB)){if (encB){reading = reading + 1;}else{reading = reading - 1;}}
     lastAB = encA;
     encC = digitalRead(PinC);
     encD = digitalRead(PinD);
-    if ((!encC) && (lastCD)){if (encD){reading = reading + 10;}else{reading = reading - 10;}
-      rotary_event = reading;
-    }
+    if ((!encC) && (lastCD)){if (encD){reading = reading + 10;}else{reading = reading - 10;}}
     lastCD = encC;
     lastTime = currentTime;
   }
