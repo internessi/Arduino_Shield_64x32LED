@@ -29,11 +29,12 @@
 
 String        zeitanzeige, datumanzeige;
 String        menu_item [12];
-int           reading = 0, uhr_minuten, uhr_stunden, uhr_sekunden, uhr_tag, uhr_monat, uhr_jahr; // Uhr
+int           rotary_event_1 = 0, rotary_event_2 = 0;
+int           uhr_minuten, uhr_stunden, uhr_sekunden, uhr_tag, uhr_monat, uhr_jahr; // Uhr
 unsigned long currentTime, lastTime, letzteUhrZeit;
 boolean       encA, encB, encC, encD;
 boolean       lastAB = false, lastCD = false;
-int           rotary_event, counter, selected_menu, selected_menu_item;
+int           counter, selected_menu, selected_menu_item;
 
 RGBmatrixPanel matrix(A, B, C, D, CLK, LAT, OE, false, 64);
 
@@ -151,7 +152,7 @@ void setup() {
   delay(500);
   matrix.fillScreen(matrix.Color333(0, 0, 0));
   counter = 0;
-  reading = -1;
+  rotary_event_1 = -1;
   selected_menu = 0;
   selected_menu_item = 2;
   PrintTime();
@@ -166,19 +167,19 @@ ROTARY();
 }
 
 void MENU(){
-    if (reading < 0){
+    if (rotary_event_1 < 0){
       selected_menu_item = selected_menu_item - 1;
       if (selected_menu_item  == 0) selected_menu_item = 8;
       MENU_pfeile();
       MENU_ITEMS();
-      reading = 0;
+      rotary_event_1 = 0;
       }
-    if (reading > 0){
+    if (rotary_event_1 > 0){
       selected_menu_item = selected_menu_item + 1;
       if (selected_menu_item  == 9) selected_menu_item = 1;
       MENU_pfeile();
       MENU_ITEMS();
-      reading = 0;
+      rotary_event_1 = 0;
       }    
 }
 
@@ -307,11 +308,11 @@ void ROTARY() {
   {
     encA = digitalRead(PinA);
     encB = digitalRead(PinB);
-    if ((!encA) && (lastAB)){if (encB){reading = reading + 1;}else{reading = reading - 1;}}
+    if ((!encA) && (lastAB)){if (encB){rotary_event_1 = rotary_event_1 + 1;}else{rotary_event_1 = rotary_event_1 - 1;}}
     lastAB = encA;
     encC = digitalRead(PinC);
     encD = digitalRead(PinD);
-    if ((!encC) && (lastCD)){if (encD){reading = reading + 10;}else{reading = reading - 10;}}
+    if ((!encC) && (lastCD)){if (encD){rotary_event_2 = rotary_event_2 + 1;}else{rotary_event_2 = rotary_event_2 - 1;}}
     lastCD = encC;
     lastTime = currentTime;
   }
